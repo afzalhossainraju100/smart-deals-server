@@ -128,6 +128,34 @@ async function run() {
             res.status(500).send({ message: "Failed to add bid" });
         }
     });
+    
+    app.delete("/bids/:id", async (req, res) => {
+        try {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bidsCollection.deleteOne(query);
+            res.send(result);
+        }
+        catch (error) {
+            console.error("Failed to delete bid:", error);
+            res.status(500).send({ message: "Failed to delete bid" });
+        }
+    });
+
+    app.patch("/bids/:id", async (req, res) => {
+        try {
+            const id = req.params.id;
+            const updatedBid = req.body;
+            const query = { _id: new ObjectId(id) };    
+            const updateDoc = { $set: updatedBid };
+            const result = await bidsCollection.updateOne(query, updateDoc);
+            res.send(result);
+        }
+        catch (error) {
+            console.error("Failed to update bid:", error);
+            res.status(500).send({ message: "Failed to update bid" });
+        }
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
