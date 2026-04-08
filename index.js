@@ -27,9 +27,45 @@ async function run() {
     const db = client.db("smart_db");
     const productsCollection = db.collection("products");
     const bidsCollection = db.collection("bids");
+    const usersCollection = db.collection("users");
 
     //all Api of smartDBuser database are here
+    // user related api
+    app.post("/users", async (req, res) => {
+      try {
+        const newUser = req.body;
+        const email = req.body.email;
+        const query = {email: email};
+        const existingUser = await usersCollection.findOne(query);
+        if(existingUser){
+          return res.status(400).send({message: "User already exists"});
+        }
+        const result = await usersCollection.insertOne(newUser);
+        res.send(result);
+      } catch (error) {
+        console.error("Failed to insert user:", error);
+        res.status(500).send({ message: "Failed to add user" });
+      }
+    });
 
+    app.get("/users", async (req, res) => {
+      try {
+        const query = {};
+        const email = req.query.email;
+        if (email) {
+          query.email = email;
+        }
+        const users = await usersCollection.find(query);
+        const result = await users.toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("Failed to fetch users:", error);
+        res.status(500).send({ message: "Failed to load users" });
+      }
+    });
+
+    
+    //products releted API
     app.post("/products", async (req, res) => {
       try {
         const newProduct = req.body;
