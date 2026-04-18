@@ -7,7 +7,12 @@ const port = process.env.PORT || 3000;
 
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./smart-deals-firebase-adminsdk1.json");
+// index.js
+const decoded = Buffer.from(
+  process.env.FIREBASE_ADMIN_KEY_BASE64,
+  "base64",
+).toString("utf8");
+const serviceAccount = JSON.parse(decoded);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -292,11 +297,11 @@ async function run() {
     // Connect the client to the server (optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     isDbConnected = true;
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!",
-    );
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!",
+    // );
   } catch (error) {
     isDbConnected = false;
     console.error(
